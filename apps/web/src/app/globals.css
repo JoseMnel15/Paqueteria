@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-display);
+  --font-display: var(--font-display);
+
+  --color-primary: #137fec;
+  --color-background-light: #f6f7f8;
+  --color-background-dark: #101922;
+  --color-content-light: #ffffff;
+  --color-content-dark: #182431;
+  --color-text-light: #0d141b;
+  --color-text-dark: #e7edf3;
+  --color-text-secondary-light: #4c739a;
+  --color-text-secondary-dark: #9ab0c9;
+  --color-border-light: #e7edf3;
+  --color-border-dark: #2d3f52;
+
+  --radius-default: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+}
+
+body {
+  background: var(--color-background-light);
+  color: var(--color-text-light);
+  font-family: var(--font-display, "Inter", "Noto Sans", sans-serif);
+}
+
+.dark body {
+  background: var(--color-background-dark);
+  color: var(--color-text-dark);
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  font-size: 24px;
+}
+
+.material-symbols-outlined.fill {
+  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+}

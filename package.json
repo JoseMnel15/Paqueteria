@@ -1,0 +1,11 @@
+{
+  "name": "paqueteria-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=18.18.0"
+  }
+}
