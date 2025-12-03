@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const disabled = useMemo(() => loading || !email || !password, [email, password, loading]);
 
@@ -66,7 +67,7 @@ export default function LoginPage() {
                   <div className="flex items-center justify-center gap-3">
                     <span className="material-symbols-outlined text-4xl text-primary">inventory_2</span>
                     <p className="text-4xl font-black leading-tight tracking-tight text-text-light dark:text-text-dark">
-                      Paqueteria
+                      Paqueteria Huetamo
                     </p>
                   </div>
                   <p className="text-base font-normal leading-normal text-text-secondary-light dark:text-text-secondary-dark">
@@ -94,16 +95,23 @@ export default function LoginPage() {
                     <div className="flex w-full items-stretch rounded-lg">
                       <input
                         className="form-input h-14 w-full rounded-l-lg border border-border-light border-r-0 bg-slate-50 p-[15px] pr-2 text-base font-normal text-text-light placeholder:text-text-secondary-light transition-colors focus:border-primary focus:outline-0 focus:ring-0 dark:border-slate-600 dark:bg-slate-800 dark:text-text-dark"
-                        placeholder="Ingresa tu contraseña"
-                        type="password"
+                      placeholder="Ingresa tu contraseña"
+                        type={showPassword ? "text" : "password"}
                         name="password"
                         autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                       />
-                      <div className="flex items-center justify-center rounded-r-lg border border-border-light border-l-0 bg-slate-50 px-4 text-text-secondary-light dark:border-slate-600 dark:bg-slate-800 dark:text-text-secondary-dark">
-                        <span className="material-symbols-outlined">visibility</span>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="flex items-center justify-center rounded-r-lg border border-border-light border-l-0 bg-slate-50 px-4 text-text-secondary-light transition-colors hover:text-text-light dark:border-slate-600 dark:bg-slate-800 dark:text-text-secondary-dark dark:hover:text-text-dark"
+                        aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      >
+                        <span className="material-symbols-outlined">
+                          {showPassword ? "visibility_off" : "visibility"}
+                        </span>
+                      </button>
                     </div>
                   </label>
                   <div className="flex items-center justify-between">
@@ -130,7 +138,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={disabled}
-                  className="flex h-14 items-center justify-center gap-2 rounded-lg bg-primary px-6 text-base font-bold leading-normal text-white transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex h-14 cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-6 text-base font-bold leading-normal text-white transition-all duration-150 hover:-translate-y-[1px] hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   Iniciar sesión
                 </button>
