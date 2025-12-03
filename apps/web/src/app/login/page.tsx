@@ -33,11 +33,7 @@ export default function LoginPage() {
       if (email.trim().toLowerCase() !== "admin@local.test" || password !== "admin123") {
         throw new Error("Credenciales incorrectas");
       }
-      saveSession({ token: result.accessToken, user: result.user });
-      if (!remember) {
-        // Sesión corta: limpiar al cerrar pestaña.
-        window.addEventListener("beforeunload", () => localStorage.removeItem("paqueteria.auth"), { once: true });
-      }
+      saveSession({ token: result.accessToken, user: result.user }, remember);
       router.replace("/dashboard");
     } catch (err: any) {
       setError(err?.message || "Usuario o contraseña incorrectos");
