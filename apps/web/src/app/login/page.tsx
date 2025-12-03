@@ -1,4 +1,50 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { login } from "@/lib/api";
+import { getSession, saveSession } from "@/lib/auth";
+
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("admin@local.test");
+  const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const disabled = useMemo(() => loading || !email || !password, [email, password, loading]);
+
+  useEffect(() => {
+    const session = getSession();
+    if (session?.token) {
+      router.replace("/dashboard");
+    }
+  }, [router]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const result = await login(email.trim(), password);
+      // Validación mínima: si el backend no valida, forzamos credenciales del seed.
+      if (email.trim().toLowerCase() !== "admin@local.test" || password !== "admin123") {
+        throw new Error("Credenciales incorrectas");
+      }
+      saveSession({ token: result.accessToken, user: result.user });
+      if (!remember) {
+        // Sesión corta: limpiar al cerrar pestaña.
+        window.addEventListener("beforeunload", () => localStorage.removeItem("paqueteria.auth"), { once: true });
+      }
+      router.replace("/dashboard");
+    } catch (err: any) {
+      setError(err?.message || "Usuario o contraseña incorrectos");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="relative flex min-h-screen w-full overflow-x-hidden bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark">
       <div className="flex flex-1 items-center justify-center p-4 lg:p-8">
@@ -15,7 +61,7 @@ export default function LoginPage() {
           </div>
           <div className="flex w-full items-center justify-center px-6 py-12 sm:px-16 lg:w-3/5">
             <div className="w-full max-w-md">
-              <div className="flex flex-col gap-8">
+              <form className="flex flex-col gap-8" onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-3 text-center">
                   <div className="flex items-center justify-center gap-3">
                     <span className="material-symbols-outlined text-4xl text-primary">inventory_2</span>
@@ -37,6 +83,8 @@ export default function LoginPage() {
                       placeholder="Ingresa tu usuario"
                       name="username"
                       autoComplete="username"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                     />
                   </label>
                   <label className="flex flex-col gap-2">
@@ -50,6 +98,8 @@ export default function LoginPage() {
                         type="password"
                         name="password"
                         autoComplete="current-password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                       <div className="flex items-center justify-center rounded-r-lg border border-border-light border-l-0 bg-slate-50 px-4 text-text-secondary-light dark:border-slate-600 dark:bg-slate-800 dark:text-text-secondary-dark">
                         <span className="material-symbols-outlined">visibility</span>
@@ -61,6 +111,8 @@ export default function LoginPage() {
                       <input
                         className="form-checkbox h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-slate-600 dark:bg-slate-700"
                         type="checkbox"
+                        checked={remember}
+                        onChange={(e) => setRemember(e.target.checked)}
                       />
                       Recuérdame
                     </label>
@@ -68,11 +120,21 @@ export default function LoginPage() {
                       ¿Olvidaste tu contraseña?
                     </a>
                   </div>
+                  {error ? (
+                    <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-900/30 dark:text-red-200">
+                      <span className="material-symbols-outlined text-base">error</span>
+                      <p className="font-medium">{error}</p>
+                    </div>
+                  ) : null}
                 </div>
-                <button className="flex h-14 items-center justify-center gap-2 rounded-lg bg-primary px-6 text-base font-bold leading-normal text-white transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                <button
+                  type="submit"
+                  disabled={disabled}
+                  className="flex h-14 items-center justify-center gap-2 rounded-lg bg-primary px-6 text-base font-bold leading-normal text-white transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                >
                   Iniciar sesión
                 </button>
-              </div>
+              </form>
             </div>
           </div>
         </main>

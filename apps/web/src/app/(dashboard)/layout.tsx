@@ -1,12 +1,33 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { Sidebar } from "../components/sidebar";
 import { Topbar } from "../components/topbar";
+import { getSession } from "@/lib/auth";
 
 export default function DashboardLayout({
   children,
 }: {
   children: ReactNode;
 }) {
+  const router = useRouter();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    const session = getSession();
+    if (!session?.token) {
+      router.replace("/login");
+      return;
+    }
+    setChecking(false);
+  }, [router]);
+
+  if (checking) {
+    return <div className="flex h-screen items-center justify-center text-sm text-text-secondary-light dark:text-text-secondary-dark">Verificando sesión...</div>;
+  }
+
   return (
     <div className="flex h-screen w-full bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark">
       <Sidebar />
